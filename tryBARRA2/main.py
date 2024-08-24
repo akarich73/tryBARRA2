@@ -34,12 +34,12 @@ import calendar
 # GLOBALS
 # -----------------------------------------------------------------------------
 
-# base thredds url for 11km reanalysis
+# base thredds url for BARRA2 11km 1hour reanalysis data
 thredds_base_url_csv = "https://thredds.nci.org.au/thredds/ncss/grid/ob53/output/reanalysis/AUS-11/BOM/ERA5/historical/hres/BARRA-R2/v1/1hr/{var}/latest/{var}_AUS-11_ERA5_historical_hres_BOM_BARRA-R2_v1_1hr_{year}{month:02d}-{year}{month:02d}.nc"
 
 # output file format todo add list of output format options
 point_output_format = "csv_file"
-grid_output_format = "netcdf3"
+# grid_output_format = "netcdf3"
 
 # relative directory for caching downloaded files
 cache_dir = 'cache'
@@ -51,16 +51,16 @@ output_dir = 'output'
 
 # set location todo implement grid netCDF download
 lat_lon_point = dict(latitude=-23.5527472, longitude=133.3961111)
-lat_lon_bbox = dict(north=-23.0, west=133.0, east=134.0, south=-24)
+# lat_lon_bbox = dict(north=-23.0, west=133.0, east=134.0, south=-24)
 
 # set time ref https://stackoverflow.com/questions/17594298/date-time-formats-in-python
 start_date_time = datetime.strptime("2023-01-01T00:00:00Z", "%Y-%m-%dT%H:%M:%SZ")
 end_date_time = datetime.strptime("2023-12-31T23:00:00Z", "%Y-%m-%dT%H:%M:%SZ")
 
-# set list of BARRA2 variables to download
-# 3barra2_variables = ["ua50m", "va50m", "ua100m", "va100m", "ua150m", "va150m", "ta50m"]
+# set list of BARRA2 variables to download default list is eastward wind (ua*), northward wind (va*), and air temperature at 50m (ta50m)
+barra2_variables = ["ua50m", "va50m", "ua100m", "va100m", "ua150m", "va150m", "ta50m"]
 # optional limited variables to test
-barra2_variables = ["ua50m", "va50m"]
+# barra2_variables = ["ua50m", "va50m"]
 
 # set output file custom name prefix to indicate a device or project location for the downloaded data
 output_filename_prefix = "demo_project"
