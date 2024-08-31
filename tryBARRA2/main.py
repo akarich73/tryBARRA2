@@ -55,12 +55,12 @@ lat_lon_point = dict(latitude=-23.5527472, longitude=133.3961111)
 
 # set time ref https://stackoverflow.com/questions/17594298/date-time-formats-in-python
 start_date_time = datetime.strptime("2023-01-01T00:00:00Z", "%Y-%m-%dT%H:%M:%SZ")
-end_date_time = datetime.strptime("2023-12-31T23:00:00Z", "%Y-%m-%dT%H:%M:%SZ")
+end_date_time = datetime.strptime("2023-03-31T23:00:00Z", "%Y-%m-%dT%H:%M:%SZ")
 
 # set list of BARRA2 variables to download default list is eastward wind (ua*), northward wind (va*), and air temperature at 50m (ta50m)
-barra2_variables = ["ua50m", "va50m", "ua100m", "va100m", "ua150m", "va150m", "ta50m"]
+# barra2_variables = ["ua50m", "va50m", "ua100m", "va100m", "ua150m", "va150m", "ta50m"]
 # optional limited variables to test
-# barra2_variables = ["ua50m", "va50m"]
+barra2_variables = ["ua50m", "va50m", "ta50m"]
 
 # set output file custom name prefix to indicate a device or project location for the downloaded data
 output_filename_prefix = "demo_project"
@@ -101,26 +101,6 @@ def download_file(url, out_filename):
         with open(out_filename, 'wb') as f:
             f.write(response.content)
 
-
-def months_datetime_list(start_date, end_date):
-    '''
-    Generate a list of months from input start and end datetime
-    References:
-        https://stackoverflow.com/questions/17594298/date-time-formats-in-python
-
-    Args:
-        start_date (datetime): start date
-        end_date (datetime): end date
-
-    Returns:
-        months_datetime_list: Pandas dataframe of months
-    '''
-
-    months_datetime_list = pd.date_range(start=start_date, end=end_date, freq='MS').to_pydatetime().tolist()
-
-    return months_datetime_list
-
-
 # -----------------------------------------------------------------------------
 # RUNTIME PROCEDURE
 # -----------------------------------------------------------------------------
@@ -130,8 +110,9 @@ def main():
     # create cache_dir if not exist
     create_dir(cache_dir)
 
-    # generate list of months for url file access
-    dates = months_datetime_list(start_date_time, end_date_time)
+    # generate list of months from input start and end datetime for url file loop
+    # ref: https://stackoverflow.com/questions/17594298/date-time-formats-in-python
+    dates = pd.date_range(start=start_date_time, end=end_date_time, freq='MS').to_pydatetime().tolist()
 
     # Loop through each variable and then each month between start and end datetime to download the relevant data
     for var in barra2_variables:
@@ -146,11 +127,11 @@ def main():
 
             # update thredds_base_url and set as url for request
             url = thredds_base_url_csv.format(var=var, year=year, month=month)
-            # add url parameters
 
+            # add url parameters
             url += f'?var={var}&latitude={lat_lon_point['latitude']}&longitude={lat_lon_point['longitude']}&time_start={time_start}&time_end={time_end}&accept={point_output_format}'
             out_filename = os.path.join(cache_dir,
-                                        f'{output_filename_prefix}_{var}_{time_start[:7]}_{time_end[:7]}.csv')
+                                        f'{output_filename_prefix}_{var}_{time_start[:10]}_{time_end[:10]}.csv')
 
             if os.path.exists(out_filename):
                 print('File already exists for ' + out_filename)
@@ -184,7 +165,7 @@ def main():
 
     # export combined to csv
     df_combined.to_csv(
-        os.path.join(output_dir, f"{output_filename_prefix}_combined_{time_start[:7]}_{time_end[:7]}.csv"))
+        os.path.join(output_dir, f"{output_filename_prefix}_combined_{start_date_time.strftime("%Y%m%d")}_{end_date_time.strftime("%Y%m%d")}.csv"))
 
 
 if __name__ == '__main__':
